@@ -19,6 +19,10 @@ const dotColors = [
 
 function drawWheel() {
     const slices = document.getElementById("wheel-slices");
+    if (!slices) {
+        // console.error("Element #wheel-slices not found.");
+        return; // Không thực hiện vẽ nếu không tìm thấy phần tử
+    }
     slices.innerHTML = "";
     const cx = 160, cy = 160;
     const rOuter = 152;
@@ -160,25 +164,46 @@ document.querySelector('#vip-modal').onclick = function (e) {
         document.getElementById('vip-modal').style.display = 'none';
     }
 };
+
 document.querySelectorAll('.card').forEach(card => {
-    card.onclick = function () {
-        const amount = card.querySelector('.amount')?.innerText || '';
-        const reward = card.querySelector('.reward')?.innerText || '';
-        const price = amount.match(/\d+/) ? `$${amount.match(/\d+/)[0]}.00` : '$0.00';
+    card.addEventListener('click', function() {
+        const amount = card.querySelector('.amount').innerText;
+        const reward = card.querySelector('.reward').innerText;
+        const package_id = card.querySelector('.package_id').innerText;
+        const member_id = card.querySelector('.member_id').innerText;
 
-        document.getElementById('order-modal-price').innerText = price;
-        document.getElementById('order-modal-reward').innerHTML = reward
-            .replace('🎟️', '<span class="order-ticket">🎟️</span>')
-            .replace('🍀', '<span class="order-clover">🍀</span>');
+        // Cập nhật giá trị trong modal
+        document.getElementById('order-modal-price').innerText = amount;
+        document.getElementById('order-modal-reward').innerHTML = reward;
+        document.getElementById('order-modal-total').innerHTML = amount;
+        document.getElementById('order-modal-subtotal').innerHTML = amount;
+        document.getElementById('order-modal-total-today').innerHTML = amount;
 
+        const checkoutButton = document.getElementById('checkout-button'); // ID của button trong modal
+        if (checkoutButton) {
+            checkoutButton.setAttribute('data-url', `/paypal/checkout?member_id=${member_id}&package_id=${package_id}`);
+        }
+
+        // Hiển thị modal
         document.getElementById('order-modal').style.display = 'flex';
-    };
+    });
 });
-document.querySelector('#order-modal').onclick = function (e) {
+
+// Hàm xử lý khi click vào button checkout trong modal (nếu cần)
+document.getElementById('checkout-button').addEventListener('click', function() {
+    const url = this.getAttribute('data-url');
+    if (url) {
+        window.location.href = url; // Chuyển hướng đến route PayPal checkout
+    }
+});
+
+// Đóng modal khi người dùng nhấp vào overlay
+document.querySelector('#order-modal').addEventListener('click', function(e) {
     if (e.target.classList.contains('order-modal-overlay')) {
         document.getElementById('order-modal').style.display = 'none';
     }
-};
+});
+
 
 document.querySelectorAll('.vip-modal-item').forEach(item => {
     item.addEventListener('click', function() {

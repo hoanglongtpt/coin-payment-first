@@ -1,3 +1,4 @@
+@if ($canSpin)
 <div id="wheel-popup">
     <h2 style="color: white; text-align: center;">Don't miss your <br> free spin today!</h2>
     <div style="position: relative; width: 100%; max-width: 340px; aspect-ratio: 1;">
@@ -28,5 +29,6 @@
             </svg>
         </div>
     </div>
-    <button class="spin-btn" onclick="spinWheel()" id="spin-btn">Spin</button>
+    <button class="spin-btn" id="spin-btn" onclick="spinWheel()" id="spin-btn">Spin</button>
 </div>
+@endif

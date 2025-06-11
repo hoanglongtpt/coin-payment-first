@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Web\PaymentController;
+use App\Http\Controllers\Web\TelegramController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,4 +17,6 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', [PaymentController::class, 'index'])->name('web.index');
+Route::get('/check', [PaymentController::class, 'check_telegram_id'])->name('web.check_telegram_id');
+Route::post('/spin', [PaymentController::class, 'spin'])->name('web.spin');
 

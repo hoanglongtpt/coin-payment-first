@@ -9,49 +9,24 @@
                 <div class="subtitle">Packages with the symbol are promotional packages for first top-up, only
                     applicable once per month</div>
             </div>
-            <div class="promo">Promotion +{{ $member->promotion ?? 0 }}🍀</div>
+            <div >
+                <span class="promo">Promotion +{{ $member->promotion ?? 0 }}🍀</span><br>
+                <span class="promo">Balance +{{ floor($member->account_balance ?? 0)  }} 🎟️</span>
+            </div>
         </div>
 
         <div class="paypal-btn"><img width="12" height="12" src="assets/images/icon_paypal.png" alt="icon_paypal">
             Paypal</div>
 
         <div class="grid">
-            <div class="card" id="card-5usd">
-                <div class="amount">5 USD</div>
-                <div class="reward">19 🎟️ + <span class="bonus">10🍀</span></div>
-            </div>
-            <div class="card" id="card-5usd">
-                <div class="amount">10 USD</div>
-                <div class="reward">47 🎟️ + <span class="bonus">10🍀</span></div>
-            </div>
-            <div class="card" id="card-5usd">
-                <div class="amount">15 USD</div>
-                <div class="reward">83 🎟️ + <span class="bonus">10🍀</span></div>
-            </div>
-            <div class="card" id="card-5usd">
-                <div class="amount">20 USD</div>
-                <div class="reward">128 🎟️ + <span class="bonus">10🍀</span></div>
-            </div>
-            <div class="card" id="card-5usd">
-                <div class="amount">30 USD</div>
-                <div class="reward">239 🎟️ + <span class="bonus">10🍀</span></div>
-            </div>
-            <div class="card" id="card-5usd">
-                <div class="amount">50 USD</div>
-                <div class="reward">485 🎟️ + <span class="bonus">10🍀</span></div>
-            </div>
-            <div class="card" id="card-5usd">
-                <div class="amount">100 USD</div>
-                <div class="reward">1160 🎟️ + <span class="bonus">10🍀</span></div>
-            </div>
-            <div class="card" id="card-5usd">
-                <div class="amount">150 USD</div>
-                <div class="reward">1913 🎟️ + <span class="bonus">10🍀</span></div>
-            </div>
-            <div class="card full">
-                <div class="amount">199 USD</div>
-                <div class="reward">2982 🎟️ + <span class="bonus">10🍀</span></div>
-            </div>
+            @foreach($packages as $package)
+                <div class="card @if ($loop->last) full @endif" id="card-{{ $package->id }}">
+                    <div style="display:none;" class="package_id">{{ $package->id }}</div>
+                    <div style="display:none;" class="member_id">{{ $member->id }}</div>
+                    <div class="amount">{{ floor($package->price) }} USD</div>
+                    <div class="reward">{{ $package->reward_points }} 🎟️ + <span class="bonus">{{ $package->bonus }}🍀</span></div>
+                </div>
+            @endforeach
         </div>
 
         <div class="vip">
@@ -147,15 +122,15 @@
                     <div><span id="order-modal-reward">19 <span class="order-ticket">🎟️</span> + 10<span
                                 class="order-clover">🍀</span></span>
                     </div>
-                    <div>$5.00</div>
+                    <div id="order-modal-total">$5.00</div>
                 </div>
                 <div class="order-modal-row">
                     <div>Promotion</div>
-                    <div>+50<span class="order-clover">🍀</span></div>
+                    <div>+{{ $member->promotion ?? 0 }}<span class="order-clover">🍀</span></div>
                 </div>
                 <div class="order-modal-row">
                     <div>Subtotal</div>
-                    <div>$5.00</div>
+                    <div id="order-modal-subtotal">$5.00</div>
                 </div>
                 <div class="order-modal-row">
                     <div>Tax</div>
@@ -163,10 +138,10 @@
                 </div>
                 <div class="order-modal-row total">
                     <div>Total due today</div>
-                    <div>$5.00</div>
+                    <div id="order-modal-total-today">$5.00</div>
                 </div>
             </div>
-            <button class="order-modal-btn">Connect wallet</button>
+            <button class="order-modal-btn" id="checkout-button" >Connect wallet</button>
             <div class="order-modal-note">
                 By confirming your subscription, you allow us to charge you for future payments in accordance with their
                 terms. You can always cancel your subscription.<br><br>

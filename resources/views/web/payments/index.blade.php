@@ -9,7 +9,7 @@
                 <div class="subtitle">Packages with the symbol are promotional packages for first top-up, only
                     applicable once per month</div>
             </div>
-            <div class="promo">Promotion +50🍀</div>
+            <div class="promo">Promotion +{{ $member->promotion ?? 0 }}🍀</div>
         </div>
 
         <div class="paypal-btn"><img width="12" height="12" src="assets/images/icon_paypal.png" alt="icon_paypal">
@@ -63,10 +63,12 @@
     <!-- FULL UPDATED WHEEL SECTION WITH SVG + POPUP -->
     @include('web.includes.wheel_popup')
 
+    
+
     <div id="result-popup"
         style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#1e1e1e; padding:30px; border-radius:16px; text-align:center; z-index:1001; color:white; font-family:'Inter',sans-serif;">
         <h3 style="margin-top:0">You received</h3>
-        <div id="reward-result" style="font-size:36px; margin:10px 0;">+50🍀</div>
+        <div id="reward-result" style="font-size:36px; margin:10px 0;">+50🍀</div> <!-- Mặc định là 50 -->
         <p>Bonus credits after payment.<br>The credits have been added to your account.</p>
         <button onclick="closeResultPopup()"
             style="margin-top:15px; padding:10px 20px; background:linear-gradient(to right,#f5c242,#e9a60c); color:#FFFFFF; border:none; border-radius:20px; font-weight:bold; cursor:pointer;">Go
@@ -177,3 +179,32 @@
         </div>
     </div>
 @endsection
+
+<script>
+    function updateWheelStatus() {
+        // Gửi yêu cầu cập nhật wheel_status và promotion
+        fetch("/spin", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({
+                    reward: rewardTexts[3], // Ví dụ dùng kết quả mặc định (thay đổi theo logic của bạn)
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log("Promotion updated:", data.reward);
+                } else {
+                    console.log("Error:", data.message);
+                }
+            });
+    }
+
+    function closeResultPopup() {
+        document.getElementById("result-popup").style.display = "none"; // Đóng popup kết quả
+        location.reload();
+    }
+</script>

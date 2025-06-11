@@ -139,12 +139,15 @@ function spinWheel() {
         document.getElementById("result-popup").style.display = "block";
         document.getElementById("wheel-popup").style.display = "none";
         document.getElementById("wheel-popup").classList.remove("show");
+        updateWheelStatus(index);
         btn.disabled = false;
         btn.innerText = "Spin";
     }, 5200);
 }
 function closeResultPopup() {
     document.getElementById("result-popup").style.display = "none";
+    location.reload();
+
 }
 window.onload = () => {
       document.getElementById("wheel-popup").classList.add("show");

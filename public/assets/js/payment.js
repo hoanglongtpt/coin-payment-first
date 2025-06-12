@@ -140,7 +140,8 @@ function spinWheel() {
     wheel.style.transform = `rotate(${rotation}deg)`;
     setTimeout(() => {
         document.getElementById("reward-result").innerText = "+" + rewardTexts[index] + "🍀";
-        document.getElementById("result-popup").style.display = "block";
+        // document.getElementById("result-popup").style.display = "block";
+        openResultPopup();
         document.getElementById("wheel-popup").style.display = "none";
         document.getElementById("wheel-popup").classList.remove("show");
         updateWheelStatus(index);

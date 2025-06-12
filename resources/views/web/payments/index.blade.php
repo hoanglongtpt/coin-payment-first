@@ -40,15 +40,36 @@
 
     
 
-    <div id="result-popup"
-        style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#1e1e1e; padding:30px; border-radius:16px; text-align:center; z-index:1001; color:white; font-family:'Inter',sans-serif;">
-        <h3 style="margin-top:0">You received</h3>
-        <div id="reward-result" style="font-size:36px; margin:10px 0;">+50🍀</div> <!-- Mặc định là 50 -->
-        <p>Bonus credits after payment.<br>The credits have been added to your account.</p>
-        <button onclick="closeResultPopup()"
-            style="margin-top:15px; padding:10px 20px; background:linear-gradient(to right,#f5c242,#e9a60c); color:#FFFFFF; border:none; border-radius:20px; font-weight:bold; cursor:pointer;">Go
-            to checkout page</button>
-    </div>
+    <!-- Confetti Video -->
+<video id="confetti-video" autoplay muted loop playsinline
+    style="display: none; position: fixed; top: 0; left: 0;
+           width: 100vw; height: 100vh; object-fit: cover;
+           z-index: 998; pointer-events: none;">
+    <source src="/assets/gif/Confetti.gif.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
+
+<!-- Overlay (nếu cần chặn click) -->
+<div id="result-overlay"
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(0,0,0,0); z-index: 999;"></div>
+
+<!-- Modal -->
+<div id="result-popup"
+     style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+            background:#1e1e1e; padding:30px; border-radius:16px;
+            text-align:center; z-index:1000; color:white; font-family:'Inter',sans-serif;">
+    <h3 style="margin-top:0">You received</h3>
+    <div id="reward-result" style="font-size:36px; margin:10px 0;">+50🍀</div>
+    <p>Bonus credits after payment.<br>The credits have been added to your account.</p>
+    <button onclick="closeResultPopup()"
+        style="margin-top:15px; padding:10px 20px;
+               background:linear-gradient(to right,#f5c242,#e9a60c);
+               color:#FFFFFF; border:none; border-radius:20px; font-weight:bold; cursor:pointer;">
+        Go to checkout page
+    </button>
+</div>
+
 
     <div id="vip-modal" style="display:none;">
         <div class="vip-modal-overlay"></div>
@@ -124,7 +145,6 @@
             </div>
         </div>
     </div>
-
 @endsection
 
 <script>
@@ -150,8 +170,26 @@
             });
     }
 
+    // function closeResultPopup() {
+    //     document.getElementById("result-popup").style.display = "none"; // Đóng popup kết quả
+    //     location.reload();
+    // }
+</script>
+
+<script>
+    function openResultPopup() {
+        document.getElementById("confetti-video").style.display = "block";
+        document.getElementById("result-overlay").style.display = "block";
+        document.getElementById("result-popup").style.display = "block";
+        document.body.style.overflow = "hidden";
+    }
+
     function closeResultPopup() {
-        document.getElementById("result-popup").style.display = "none"; // Đóng popup kết quả
-        location.reload();
+        document.getElementById("confetti-video").style.display = "none";
+        document.getElementById("result-overlay").style.display = "none";
+        document.getElementById("result-popup").style.display = "none";
+        document.body.style.overflow = "";
     }
 </script>
+
+

@@ -62,52 +62,23 @@
                 will not be deleted when expired
             </div>
             <div class="vip-modal-list">
-                <div class="vip-modal-item" id="vip-card-usd">
-                    <div class="vip-modal-item-left">
-                        <div class="vip-modal-item-amount">19 USD</div>
-                        <div class="vip-modal-item-ticket">
-                            29 <span class="vip-ticket-icon">🎟️</span>
+                @foreach($vipCards as $card)
+                    <div class="vip-modal-item">
+                        <div class="vip-modal-item-left">
+                            <div style="display:none;" class="vip_card_id">{{ $card->id ?? null }}</div>
+                            <div style="display:none;" class="member_id">{{ $member->id ?? null }}</div>
+                            <div class="vip-modal-item-amount">{{ floor($card->amount_usd) }} USD</div>
+                            <div class="vip-modal-item-ticket">
+                                {{ $card->ticket_count }} <span class="vip-ticket-icon">🎟️</span>
+                            </div>
+                        </div>
+                        <div class="vip-modal-item-right">
+                            {{ $card->description }}
                         </div>
                     </div>
-                    <div class="vip-modal-item-right">
-                        Daily for 142 Days 7
-                    </div>
-                </div>
-                <div class="vip-modal-item" id="vip-card-usd">
-                    <div class="vip-modal-item-left">
-                        <div class="vip-modal-item-amount">49 USD</div>
-                        <div class="vip-modal-item-ticket">
-                            49 <span class="vip-ticket-icon">🎟️</span>
-                        </div>
-                    </div>
-                    <div class="vip-modal-item-right">
-                        Daily for 272 Days 7
-                    </div>
-                </div>
-                <div class="vip-modal-item" id="vip-card-usd">
-                    <div class="vip-modal-item-left">
-                        <div class="vip-modal-item-amount">69 USD</div>
-                        <div class="vip-modal-item-ticket">
-                            69 <span class="vip-ticket-icon">🎟️</span>
-                        </div>
-                    </div>
-                    <div class="vip-modal-item-right">
-                        Daily for 143 Days 7
-                    </div>
-                </div>
-                <div class="vip-modal-item" id="vip-card-usd">
-                    <div class="vip-modal-item-left">
-                        <div class="vip-modal-item-amount">119 USD</div>
-                        <div class="vip-modal-item-ticket">
-                            119 <span class="vip-ticket-icon">🎟️</span>
-                        </div>
-                    </div>
-                    <div class="vip-modal-item-right">
-                        Daily for 273 Days 7
-                    </div>
-                </div>
+                @endforeach
             </div>
-            <button class="vip-modal-btn"><span style="font-size:18px;">🎟️</span> Buy VIP</button>
+            <button onclick="location.reload();" class="vip-modal-btn"><span style="font-size:18px;">🎟️</span> Buy VIP</button>
         </div>
     </div>
 
@@ -153,6 +124,7 @@
             </div>
         </div>
     </div>
+
 @endsection
 
 <script>

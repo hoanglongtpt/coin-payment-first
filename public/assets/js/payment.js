@@ -189,13 +189,7 @@ document.querySelectorAll('.card').forEach(card => {
     });
 });
 
-// Hàm xử lý khi click vào button checkout trong modal (nếu cần)
-document.getElementById('checkout-button').addEventListener('click', function() {
-    const url = this.getAttribute('data-url');
-    if (url) {
-        window.location.href = url; // Chuyển hướng đến route PayPal checkout
-    }
-});
+
 
 // Đóng modal khi người dùng nhấp vào overlay
 document.querySelector('#order-modal').addEventListener('click', function(e) {
@@ -210,3 +204,36 @@ document.querySelectorAll('.vip-modal-item').forEach(item => {
         document.getElementById('order-modal').style.display = 'flex';
     });
 });
+
+document.querySelectorAll('.vip-modal-item').forEach(card => {
+    card.addEventListener('click', function() {
+        const amount = card.querySelector('.vip-modal-item-amount').innerText;
+        const coin = card.querySelector('.vip-modal-item-ticket').innerText;
+        const vip_card_id = card.querySelector('.vip_card_id').innerText;
+        const member_id = card.querySelector('.member_id').innerText;
+
+        // Cập nhật giá trị trong modal
+        document.getElementById('order-modal-price').innerText = amount;
+        document.getElementById('order-modal-reward').innerHTML = coin;
+        document.getElementById('order-modal-total').innerHTML = amount;
+        document.getElementById('order-modal-subtotal').innerHTML = amount;
+        document.getElementById('order-modal-total-today').innerHTML = amount;
+
+        const checkoutButton = document.getElementById('checkout-button'); // ID của button trong modal
+        if (checkoutButton) {
+            checkoutButton.setAttribute('data-url', `/paypal/checkout-vip?member_id=${member_id}&vip_card_id=${vip_card_id}`);
+        }
+
+        // Hiển thị modal
+        document.getElementById('order-modal').style.display = 'flex';
+    });
+});
+
+// Hàm xử lý khi click vào button checkout trong modal (nếu cần)
+document.getElementById('checkout-button').addEventListener('click', function() {
+    const url = this.getAttribute('data-url');
+    if (url) {
+        window.location.href = url; // Chuyển hướng đến route PayPal checkout
+    }
+});
+

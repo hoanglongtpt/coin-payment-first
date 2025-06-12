@@ -25,5 +25,11 @@ Route::get('paypal/checkout', [PaypalController::class, 'checkout'])->name('payp
 Route::get('paypal/payment-success', [PayPalController::class, 'successTransaction'])->name('successTransaction');
 Route::get('paypal/payment-cancel', [PayPalController::class, 'cancelTransaction'])->name('cancelTransaction');
 
+// vip
+
+Route::get('paypal/checkout-vip', [PaypalController::class, 'checkout_vip'])->name('paypal.checkout.vip');
+Route::get('paypal/payment-success-vip', [PayPalController::class, 'successTransaction_vip'])->name('successTransaction.vip');
+Route::get('paypal/payment-cancel-vip', [PayPalController::class, 'cancelTransaction_vip'])->name('cancelTransaction.vip');
+
 
 

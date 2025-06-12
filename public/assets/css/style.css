@@ -347,6 +347,7 @@
             background: linear-gradient(to right, #2a2a1a, #1f1f1f);
             border: 1px solid rgba(255, 215, 0, 0.4);
             border-radius: 12px;
+            cursor: pointer;
         }
 
         .vip-modal-item-left {

@@ -134,8 +134,8 @@ class PaypalController extends Controller
                     "👤 Thành viên: {$member->telegram_id}\n" .
                     "📦 Gói: {$package->name}\n" .
                     "💰 Số tiền: {$transaction->amount} USD\n" .
-                    "🎁 Điểm thưởng: {$package->reward_points} 🍀\n" .
-                    "🎉 Khuyến mãi: {$package->bonus} 🎟️\n" .
+                    "🎁 Điểm thưởng: {$package->reward_points} 🎟️\n" .
+                    "🎉 Khuyến mãi: {$package->bonus} 🍀\n" .
                     "🕒 Thời gian: " . now()->format('d/m/Y H:i:s') . "\n" .
                     "📜 Mã giao dịch: {$transaction->id}";
 

@@ -21,8 +21,8 @@
         <div class="grid">
             @foreach($packages as $package)
                 <div class="card @if ($loop->last) full @endif" id="card-{{ $package->id }}">
-                    <div style="display:none;" class="package_id">{{ $package->id }}</div>
-                    <div style="display:none;" class="member_id">{{ $member->id }}</div>
+                    <div style="display:none;" class="package_id">{{ $package->id ?? null }}</div>
+                    <div style="display:none;" class="member_id">{{ $member->id ?? null }}</div>
                     <div class="amount">{{ floor($package->price) }} USD</div>
                     <div class="reward">{{ $package->reward_points }} 🎟️ + <span class="bonus">{{ $package->bonus }}🍀</span></div>
                 </div>

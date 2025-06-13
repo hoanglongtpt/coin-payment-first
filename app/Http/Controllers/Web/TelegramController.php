@@ -22,14 +22,13 @@ class TelegramController extends Controller
             $text = $update->getMessage()->getText();
 
             if (strtolower($text) === '/start') {
-                // Lấy domain hiện tại và tạo URL payment
-                $domain = request()->getSchemeAndHttpHost(); // Ví dụ: https://1b07-2405-4802-e62c-fcf0-9c12-aadc-3edf-d84.ngrok-free.app
+                $domain = request()->getSchemeAndHttpHost(); 
                 // $domain = 'http://127.0.0.1:8000';
                 $paymentUrl = $domain . "/video/" . $chatId;
 
                 $telegram->sendMessage([
                     'chat_id' => $chatId,
-                    'text' => "Link payment của bạn là: $paymentUrl"
+                    'text' => "Link payment : $paymentUrl"
                 ]);
             }
         }
@@ -49,14 +48,13 @@ class TelegramController extends Controller
             $text = $update->getMessage()->getText();
 
             if (strtolower($text) === '/start') {
-                // Lấy domain hiện tại và tạo URL payment
-                $domain = request()->getSchemeAndHttpHost(); // Ví dụ: https://1b07-2405-4802-e62c-fcf0-9c12-aadc-3edf-d84.ngrok-free.app
+                $domain = request()->getSchemeAndHttpHost(); 
                 // $domain = 'http://127.0.0.1:8000';
                 $paymentUrl = $domain . "/photo/" . $chatId;
 
                 $telegram->sendMessage([
                     'chat_id' => $chatId,
-                    'text' => "Link payment của bạn là: $paymentUrl"
+                    'text' => "Link payment : $paymentUrl"
                 ]);
             }
         }

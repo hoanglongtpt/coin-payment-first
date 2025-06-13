@@ -6,7 +6,6 @@
     <title>Telegram Login</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        /* Đặt nền đen cho toàn bộ trang */
         body {
             background-color: #121212;
             font-family: Arial, sans-serif;
@@ -19,7 +18,6 @@
             height: 100vh;
         }
 
-        /* Card chứa nội dung */
         .card {
             background-color: #1c1c1c;
             border-radius: 8px;
@@ -30,14 +28,12 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
-        /* Tiêu đề */
         h1 {
             font-size: 24px;
             margin-bottom: 20px;
             color: #ffcc00;
         }
 
-        /* Thông tin và liên kết */
         p {
             font-size: 16px;
             margin-bottom: 20px;
@@ -57,9 +53,9 @@
 <body>
     @include('sweetalert::alert')
     <div class="card">
-        <h1>Vui lòng đăng nhập vào bot Telegram để lấy link đăng nhập:</h1>
-        <p>Đăng nhập vào bot video: <a href="https://t.me/videoweb00_bot" target="_blank">Video bot</a></p>
-        <p>Đăng nhập vào bot photo: <a href="https://t.me/photoweb00_bot" target="_blank">Photo bot</a></p>
+        <h1>Please log in to the Telegram bot to get your login link:</h1>
+        <p>Log in to the video bot: <a href="https://t.me/videoweb00_bot" target="_blank">Video bot</a></p>
+        <p>Log in to the photo bot: <a href="https://t.me/photoweb00_bot" target="_blank">Photo bot</a></p>
     </div>
 </body>
 </html>

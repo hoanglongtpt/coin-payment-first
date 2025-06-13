@@ -21,7 +21,7 @@ class PaymentController extends Controller
         $type_bot = str_contains(request()->fullUrl(), 'video') ? 'video' : 'photo';
 
         if (!$telegramId) {
-            Alert::error("Error", "Sorry, we couldn't find your account in our system")->autoClose(2000);
+            // Alert::error("Error", "Sorry, we couldn't find your account in our system")->autoClose(2000);
             return redirect()->route('web.check_telegram_id');
         }
 

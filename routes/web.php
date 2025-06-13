@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', [PaymentController::class, 'index'])->name('web.index');
+Route::get('/video/{telegram_id}', [PaymentController::class, 'index'])->name('web.index.video');
+Route::get('/photo/{telegram_id}', [PaymentController::class, 'index'])->name('web.index.photo');
 Route::get('/check', [PaymentController::class, 'check_telegram_id'])->name('web.check_telegram_id');
 Route::post('/spin', [PaymentController::class, 'spin'])->name('web.spin');
 

@@ -169,9 +169,13 @@ document.querySelector('#vip-modal').onclick = function (e) {
 document.querySelectorAll('.card').forEach(card => {
     card.addEventListener('click', function() {
         const amount = card.querySelector('.amount').innerText;
+        const price = card.querySelector('.price').innerText;
         const reward = card.querySelector('.reward').innerText;
-        const package_id = card.querySelector('.package_id').innerText;
+        const package_sku = card.querySelector('.package_sku').innerText;
         const member_id = card.querySelector('.member_id').innerText;
+        const tokens_first_time = card.querySelector('.tokens_first_time').innerText;
+        const promotion = card.querySelector('.promotion').innerText;
+        const sale = card.querySelector('.sale').innerText;
 
         // Cập nhật giá trị trong modal
         document.getElementById('order-modal-price').innerText = amount;
@@ -182,7 +186,7 @@ document.querySelectorAll('.card').forEach(card => {
 
         const checkoutButton = document.getElementById('checkout-button'); // ID của button trong modal
         if (checkoutButton) {
-            checkoutButton.setAttribute('data-url', `/paypal/checkout?member_id=${member_id}&package_id=${package_id}`);
+            checkoutButton.setAttribute('data-url', `/paypal/checkout?member_id=${member_id}&package_sku=${package_sku}&tokens_first_time=${tokens_first_time}&tokens_first_time=${tokens_first_time}&promotion=${promotion}&sale=${sale}&price=${price}`);
         }
 
         // Hiển thị modal
@@ -231,10 +235,22 @@ document.querySelectorAll('.vip-modal-item').forEach(card => {
 });
 
 // Hàm xử lý khi click vào button checkout trong modal (nếu cần)
-document.getElementById('checkout-button').addEventListener('click', function() {
-    const url = this.getAttribute('data-url');
+document.getElementById('checkout-button').addEventListener('click', function () {
+    const button = this;
+    const url = button.getAttribute('data-url');
+
     if (url) {
-        window.location.href = url; // Chuyển hướng đến route PayPal checkout
+        // Hiển thị loading
+        document.getElementById('loading-spinner').style.display = 'block';
+
+        // Disable nút để tránh bấm nhiều lần
+        button.disabled = true;
+        button.innerText = 'Đang xử lý...';
+
+        // Chuyển trang sau một chút để loading hiển thị rõ
+        setTimeout(() => {
+            window.location.href = url;
+        }, 300);
     }
 });
 

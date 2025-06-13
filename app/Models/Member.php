@@ -14,5 +14,6 @@ class Member extends Model
         'promotion',
         'account_balance',
         'wheel_status',
+        'type_bot',
     ];
 }

@@ -12,8 +12,8 @@ use App\Models\VipCard;
 use Illuminate\Support\Facades\DB;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Log;
-use Telegram\Bot\Api; // Nếu dùng gói telegram-bot-sdk
-use Illuminate\Support\Facades\Http; // Nếu dùng HTTP Client
+use Telegram\Bot\Api;
+use Illuminate\Support\Facades\Http;
 
 
 class PaypalController extends Controller
@@ -26,7 +26,6 @@ class PaypalController extends Controller
         $token = $paypal->getAccessToken();
         $paypal->setAccessToken($token);
 
-        // tạo mới transaction - status: pending
 
         $transaction_order = new Transaction();
         $transaction_order->member_id = $request->member_id;
@@ -39,7 +38,6 @@ class PaypalController extends Controller
         $transaction_order->token_pay = $token['access_token'];
         $transaction_order->save();
 
-        // Tạo payment (sử dụng phương thức create)
         $response = $paypal->createOrder([
             "intent" => "CAPTURE",
             "purchase_units" => [
@@ -57,7 +55,6 @@ class PaypalController extends Controller
         ]);
 
 
-        // Kiểm tra nếu thanh toán đã được tạo thành công
         if (isset($response['id'])) {
             foreach ($response['links'] as $link) {
                 if ($link['rel'] === 'approve') {
@@ -93,11 +90,10 @@ class PaypalController extends Controller
 
                 $member = Member::find($transaction_order->member_id);
                 if ($member) {
-                    $member->account_balance += $transaction_order->sale; // Cộng tiền vào tài khoản của thành viên
-                    $member->promotion += $transaction_order->promotion; // Cộng tiền vào tài khoản của thành viên
+                    $member->account_balance += $transaction_order->sale;
+                    $member->promotion += $transaction_order->promotion;
                     $member->save();
 
-                    // Gửi thông báo Telegram
                     $this->sendTelegramNotification($member, $transaction_order);
                 }
 
@@ -134,7 +130,6 @@ class PaypalController extends Controller
     }
 
     /**
-     * Gửi thông báo Telegram
      */
     private function sendTelegramNotification($member, $transaction)
     {
@@ -144,17 +139,17 @@ class PaypalController extends Controller
             } else {
                 $botToken = env('TELEGRAM_BOT_TOKEN_PHOTO');
             }
-            $chatId = $member->telegram_id; // Lấy telegram_id từ member
-            $message = "🎉 Thanh toán thành công!\n\n" .
-                "👤 Thành viên: {$member->telegram_id}\n" .
-                "📦 Gói: {$transaction->amount}\n" .
-                "💰 Số tiền: {$transaction->amount} USD\n" .
-                "🎁 Điểm thưởng: {$transaction->sale} 🎟️\n" .
-                "🎉 Khuyến mãi: {$transaction->promotion} 🍀\n" .
-                "🕒 Thời gian: " . now()->format('d/m/Y H:i:s') . "\n" .
-                "📜 Mã giao dịch: {$transaction->id}";
+            $chatId = $member->telegram_id;
+            $message = "🎉 Payment successful!\n\n" .
+                "👤 Member: {$member->telegram_id}\n" .
+                "📦 Package: {$transaction->amount}\n" .
+                "💰 Amount: {$transaction->amount} USD\n" .
+                "🎁 Bonus points: {$transaction->sale} 🎟️\n" .
+                "🎉 Promotion: {$transaction->promotion} 🍀\n" .
+                "🕒 Time: " . now()->format('d/m/Y H:i:s') . "\n" .
+                "📜 Transaction ID: {$transaction->id}";
 
-            // Sử dụng HTTP Client để gửi tin nhắn
+
             $response = Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
                 'chat_id' => $chatId,
                 'text' => $message,
@@ -162,10 +157,10 @@ class PaypalController extends Controller
             ]);
 
             if (!$response->successful()) {
-                Log::error('Gửi thông báo Telegram thất bại: ' . $response->body());
+                Log::error('error: ' . $response->body());
             }
         } catch (\Exception $e) {
-            Log::error('Lỗi gửi thông báo Telegram: ' . $e->getMessage());
+            Log::error('error: ' . $e->getMessage());
         }
     }
 
@@ -197,14 +192,13 @@ class PaypalController extends Controller
     // Checkout VIP
     public function checkout_vip(Request $request)
     {
-        $vipcard = VipCard::findOrFail($request->vip_card_id);  // Lấy thông tin gói từ cơ sở dữ liệu
+        $vipcard = VipCard::findOrFail($request->vip_card_id);
 
         $paypal = new PayPalClient;
         $paypal->setApiCredentials(config('paypal'));
         $token = $paypal->getAccessToken();
         $paypal->setAccessToken($token);
 
-        // tạo mới transaction - status: pending
 
         $transaction_order = new Transaction();
         $transaction_order->member_id = $request->member_id;
@@ -214,14 +208,13 @@ class PaypalController extends Controller
         $transaction_order->token_pay = $token['access_token'];
         $transaction_order->save();
 
-        // Tạo payment (sử dụng phương thức create)
         $response = $paypal->createOrder([
             "intent" => "CAPTURE",
             "purchase_units" => [
                 [
                     "amount" => [
                         "currency_code" => "USD",
-                        "value" => $vipcard->amount_usd // Set the package price here
+                        "value" => $vipcard->amount_usd
                     ]
                 ]
             ],
@@ -232,7 +225,6 @@ class PaypalController extends Controller
         ]);
 
 
-        // Kiểm tra nếu thanh toán đã được tạo thành công
         if (isset($response['id'])) {
             foreach ($response['links'] as $link) {
                 if ($link['rel'] === 'approve') {
@@ -289,10 +281,9 @@ class PaypalController extends Controller
 
                 if ($vipcard) {
                     $member = Member::find($transaction_order->member_id);
-                    $member->account_balance += $vipcard->ticket_count; // Cộng tiền vào tài khoản của thành viên
+                    $member->account_balance += $vipcard->ticket_count;
                     $member->save();
 
-                    // Gửi thông báo Telegram
                     $this->sendTelegramNotification_vip($member, $vipcard, $transaction_order);
                 }
 
@@ -324,17 +315,17 @@ class PaypalController extends Controller
     {
         try {
             $botToken = env('TELEGRAM_BOT_TOKEN');
-            $chatId = $member->telegram_id; // Lấy telegram_id từ member
-            $message = "🎉 Thanh toán thành công!\n\n" .
-                "👤 Thành viên: {$member->telegram_id}\n" .
-                "📦 Gói Vip: {$vipcard->amount_usd} USD\n" .
-                "💰 Số tiền: {$transaction->amount} USD\n" .
-                "🎁 Điểm thưởng: {$vipcard->ticket_count} 🎟️\n" .
-                "📜 Mô tả: {$vipcard->description} 🎟️\n" .
-                "🕒 Thời gian: " . now()->format('d/m/Y H:i:s') . "\n" .
-                "📜 Mã giao dịch: {$transaction->id}";
+            $chatId = $member->telegram_id;
+            $message = "🎉 Payment successful!\n\n" .
+                "👤 Member: {$member->telegram_id}\n" .
+                "📦 VIP Package: {$vipcard->amount_usd} USD\n" .
+                "💰 Paid Amount: {$transaction->amount} USD\n" .
+                "🎁 Bonus Tickets: {$vipcard->ticket_count} 🎟️\n" .
+                "📜 Description: {$vipcard->description} 🎟️\n" .
+                "🕒 Time: " . now()->format('d/m/Y H:i:s') . "\n" .
+                "📜 Transaction ID: {$transaction->id}";
 
-            // Sử dụng HTTP Client để gửi tin nhắn
+
             $response = Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
                 'chat_id' => $chatId,
                 'text' => $message,
@@ -342,10 +333,10 @@ class PaypalController extends Controller
             ]);
 
             if (!$response->successful()) {
-                Log::error('Gửi thông báo Telegram thất bại: ' . $response->body());
+                Log::error('error: ' . $response->body());
             }
         } catch (\Exception $e) {
-            Log::error('Lỗi gửi thông báo Telegram: ' . $e->getMessage());
+            Log::error('error: ' . $e->getMessage());
         }
     }
 }

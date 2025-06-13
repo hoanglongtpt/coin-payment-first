@@ -55,7 +55,6 @@
         Your browser does not support the video tag.
     </video>
 
-    <!-- Overlay (nếu cần chặn click) -->
     <div id="result-overlay"
         style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
             background:rgba(0,0,0,0); z-index: 999;">
@@ -175,7 +174,6 @@
 
 <script>
     function updateWheelStatus() {
-        // Gửi yêu cầu cập nhật wheel_status và promotion
         fetch("/spin", {
                 method: "POST",
                 headers: {
@@ -183,7 +181,7 @@
                     "X-CSRF-TOKEN": "{{ csrf_token() }}"
                 },
                 body: JSON.stringify({
-                    reward: rewardTexts[3], // Ví dụ dùng kết quả mặc định (thay đổi theo logic của bạn)
+                    reward: rewardTexts[3], 
                 })
             })
             .then(response => response.json())

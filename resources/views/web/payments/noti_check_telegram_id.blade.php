@@ -58,8 +58,8 @@
     @include('sweetalert::alert')
     <div class="card">
         <h1>Vui lòng đăng nhập vào bot Telegram để lấy link đăng nhập:</h1>
-        <p>Đăng nhập vào bot video: <a href="https://t.me/videotest00_bot" target="_blank">Video bot</a></p>
-        <p>Đăng nhập vào bot photo: <a href="https://t.me/phototest00_bot" target="_blank">Photo bot</a></p>
+        <p>Đăng nhập vào bot video: <a href="https://t.me/videoweb00_bot" target="_blank">Video bot</a></p>
+        <p>Đăng nhập vào bot photo: <a href="https://t.me/photoweb00_bot" target="_blank">Photo bot</a></p>
     </div>
 </body>
 </html>

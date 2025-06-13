@@ -23,8 +23,8 @@ class TelegramController extends Controller
 
             if (strtolower($text) === '/start') {
                 // Lấy domain hiện tại và tạo URL payment
-                // $domain = request()->getSchemeAndHttpHost(); // Ví dụ: https://1b07-2405-4802-e62c-fcf0-9c12-aadc-3edf-d84.ngrok-free.app
-                $domain = 'http://127.0.0.1:8000';
+                $domain = request()->getSchemeAndHttpHost(); // Ví dụ: https://1b07-2405-4802-e62c-fcf0-9c12-aadc-3edf-d84.ngrok-free.app
+                // $domain = 'http://127.0.0.1:8000';
                 $paymentUrl = $domain . "/video/" . $chatId;
 
                 $telegram->sendMessage([

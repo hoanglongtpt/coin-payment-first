@@ -20,7 +20,6 @@ class PaypalController extends Controller
 {
     public function checkout(Request $request)
     {
-        $package = Package::findOrFail($request->package_id);  // Lấy thông tin gói từ cơ sở dữ liệu
 
         $paypal = new PayPalClient;
         $paypal->setApiCredentials(config('paypal'));
@@ -31,8 +30,11 @@ class PaypalController extends Controller
 
         $transaction_order = new Transaction();
         $transaction_order->member_id = $request->member_id;
-        $transaction_order->package_id = $request->package_id;
-        $transaction_order->amount = $package->price;
+        $transaction_order->package_sku = $request->package_sku;
+        $transaction_order->amount = $request->price;
+        $transaction_order->tokens_first_time = $request->tokens_first_time;
+        $transaction_order->sale = $request->sale;
+        $transaction_order->promotion = $request->promotion;
         $transaction_order->status = 2;
         $transaction_order->token_pay = $token['access_token'];
         $transaction_order->save();
@@ -44,7 +46,7 @@ class PaypalController extends Controller
                 [
                     "amount" => [
                         "currency_code" => "USD",
-                        "value" => $package->price // Set the package price here
+                        "value" => $request->price // Set the package price here
                     ]
                 ]
             ],
@@ -63,7 +65,7 @@ class PaypalController extends Controller
                 }
             }
         } else {
-            return redirect()->route('web.index')->with('error', 'An error occurred while creating the payment.');
+            return redirect()->back()->with('error', 'An error occurred while creating the payment.');
         }
     }
 
@@ -83,38 +85,45 @@ class PaypalController extends Controller
                 // Handle successful payment logic here (e.g., updating the database)
 
                 $transaction_order = Transaction::where('token_pay', $token['access_token'])
-                                ->orderBy('id', 'desc') 
-                                ->first();
+                    ->orderBy('id', 'desc')
+                    ->first();
                 $transaction_order->status = 1;
                 $transaction_order->save();
 
-                $package = Package::find($transaction_order->package_id);
 
-                if ($package) {
-                    $member = Member::find($transaction_order->member_id);
-                    $member->account_balance += $package->reward_points; // Cộng tiền vào tài khoản của thành viên
-                    $member->promotion += $package->bonus; // Cộng tiền vào tài khoản của thành viên
+                $member = Member::find($transaction_order->member_id);
+                if ($member) {
+                    $member->account_balance += $transaction_order->sale; // Cộng tiền vào tài khoản của thành viên
+                    $member->promotion += $transaction_order->promotion; // Cộng tiền vào tài khoản của thành viên
                     $member->save();
 
                     // Gửi thông báo Telegram
-                    $this->sendTelegramNotification($member, $package, $transaction_order);
+                    $this->sendTelegramNotification($member, $transaction_order);
                 }
 
                 DB::commit();
-                Alert::success( "Success" ,  "Pay success!" )->autoClose(2000);
-                return redirect()->route('web.index',['telegram_id' => $member->telegram_id]);
+                Alert::success("Success",  "Pay success!")->autoClose(2000);
+                if ($member->type_bot == 'video') {
+                    return redirect()->route('web.index.video', ['telegram_id' => $member->telegram_id]);
+                } else {
+                    return redirect()->route('web.index.photo', ['telegram_id' => $member->telegram_id]);
+                }
             } else {
 
                 $transaction_order = Transaction::where('token_pay', $token['access_token'])
-                                ->orderBy('id', 'desc') 
-                                ->first();
+                    ->orderBy('id', 'desc')
+                    ->first();
                 $transaction_order->status = 3;
                 $transaction_order->save();
                 $member = Member::find($transaction_order->member_id);
 
                 DB::commit();
-                Alert::error("Success" ,  "Pay success!")->autoClose(2000);
-                return redirect()->route('web.index',['telegram_id' => $member->telegram_id]);
+                Alert::error("Success",  "Pay success!")->autoClose(2000);
+                if ($member->type_bot == 'video') {
+                    return redirect()->route('web.index.video', ['telegram_id' => $member->telegram_id]);
+                } else {
+                    return redirect()->route('web.index.photo', ['telegram_id' => $member->telegram_id]);
+                }
             }
         } catch (\Exception $e) {
             DB::rollBack();
@@ -127,19 +136,23 @@ class PaypalController extends Controller
     /**
      * Gửi thông báo Telegram
      */
-    private function sendTelegramNotification($member, $package, $transaction)
+    private function sendTelegramNotification($member, $transaction)
     {
         try {
-            $botToken = env('TELEGRAM_BOT_TOKEN');
+            if ($member->type_bot == 'video') {
+                $botToken = env('TELEGRAM_BOT_TOKEN_VIDEO');
+            } else {
+                $botToken = env('TELEGRAM_BOT_TOKEN_PHOTO');
+            }
             $chatId = $member->telegram_id; // Lấy telegram_id từ member
             $message = "🎉 Thanh toán thành công!\n\n" .
-                    "👤 Thành viên: {$member->telegram_id}\n" .
-                    "📦 Gói: {$package->name}\n" .
-                    "💰 Số tiền: {$transaction->amount} USD\n" .
-                    "🎁 Điểm thưởng: {$package->reward_points} 🎟️\n" .
-                    "🎉 Khuyến mãi: {$package->bonus} 🍀\n" .
-                    "🕒 Thời gian: " . now()->format('d/m/Y H:i:s') . "\n" .
-                    "📜 Mã giao dịch: {$transaction->id}";
+                "👤 Thành viên: {$member->telegram_id}\n" .
+                "📦 Gói: {$transaction->amount}\n" .
+                "💰 Số tiền: {$transaction->amount} USD\n" .
+                "🎁 Điểm thưởng: {$transaction->sale} 🎟️\n" .
+                "🎉 Khuyến mãi: {$transaction->promotion} 🍀\n" .
+                "🕒 Thời gian: " . now()->format('d/m/Y H:i:s') . "\n" .
+                "📜 Mã giao dịch: {$transaction->id}";
 
             // Sử dụng HTTP Client để gửi tin nhắn
             $response = Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
@@ -164,8 +177,8 @@ class PaypalController extends Controller
         $paypal->setAccessToken($token);
 
         $transaction_order = Transaction::where('token_pay', $token['access_token'])
-                                ->orderBy('id', 'desc') 
-                                ->first();
+            ->orderBy('id', 'desc')
+            ->first();
         $transaction_order->status = 3;
         $transaction_order->save();
 
@@ -174,7 +187,11 @@ class PaypalController extends Controller
         // Rollback the transaction if necessary
         // Handle the cancellation logic here
         Alert::error("Error", "Pay Fail")->autoClose(2000);
-        return redirect()->route('web.index',['telegram_id' => $member->telegram_id]);
+        if ($member->type_bot == 'video') {
+            return redirect()->route('web.index.video', ['telegram_id' => $member->telegram_id]);
+        } else {
+            return redirect()->route('web.index.photo', ['telegram_id' => $member->telegram_id]);
+        }
     }
 
     // Checkout VIP
@@ -235,8 +252,8 @@ class PaypalController extends Controller
         $paypal->setAccessToken($token);
 
         $transaction_order = Transaction::where('token_pay', $token['access_token'])
-                                ->orderBy('id', 'desc') 
-                                ->first();
+            ->orderBy('id', 'desc')
+            ->first();
         $transaction_order->status = 3;
         $transaction_order->save();
 
@@ -245,7 +262,7 @@ class PaypalController extends Controller
         // Rollback the transaction if necessary
         // Handle the cancellation logic here
         Alert::error("Error", "Pay Fail")->autoClose(2000);
-        return redirect()->route('web.index',['telegram_id' => $member->telegram_id]);
+        return redirect()->route('web.index', ['telegram_id' => $member->telegram_id]);
     }
 
     public function successTransaction_vip(Request $request)
@@ -263,8 +280,8 @@ class PaypalController extends Controller
                 // Handle successful payment logic here (e.g., updating the database)
 
                 $transaction_order = Transaction::where('token_pay', $token['access_token'])
-                                ->orderBy('id', 'desc') 
-                                ->first();
+                    ->orderBy('id', 'desc')
+                    ->first();
                 $transaction_order->status = 1;
                 $transaction_order->save();
 
@@ -280,20 +297,20 @@ class PaypalController extends Controller
                 }
 
                 DB::commit();
-                Alert::success( "Success" ,  "Pay success!" )->autoClose(2000);
-                return redirect()->route('web.index',['telegram_id' => $member->telegram_id]);
+                Alert::success("Success",  "Pay success!")->autoClose(2000);
+                return redirect()->route('web.index', ['telegram_id' => $member->telegram_id]);
             } else {
 
                 $transaction_order = Transaction::where('token_pay', $token['access_token'])
-                                ->orderBy('id', 'desc') 
-                                ->first();
+                    ->orderBy('id', 'desc')
+                    ->first();
                 $transaction_order->status = 3;
                 $transaction_order->save();
                 $member = Member::find($transaction_order->member_id);
 
                 DB::commit();
-                Alert::error("Success" ,  "Pay success!")->autoClose(2000);
-                return redirect()->route('web.index',['telegram_id' => $member->telegram_id]);
+                Alert::error("Success",  "Pay success!")->autoClose(2000);
+                return redirect()->route('web.index', ['telegram_id' => $member->telegram_id]);
             }
         } catch (\Exception $e) {
             DB::rollBack();
@@ -309,13 +326,13 @@ class PaypalController extends Controller
             $botToken = env('TELEGRAM_BOT_TOKEN');
             $chatId = $member->telegram_id; // Lấy telegram_id từ member
             $message = "🎉 Thanh toán thành công!\n\n" .
-                    "👤 Thành viên: {$member->telegram_id}\n" .
-                    "📦 Gói Vip: {$vipcard->amount_usd} USD\n" .
-                    "💰 Số tiền: {$transaction->amount} USD\n" .
-                    "🎁 Điểm thưởng: {$vipcard->ticket_count} 🎟️\n" .
-                    "📜 Mô tả: {$vipcard->description} 🎟️\n" .
-                    "🕒 Thời gian: " . now()->format('d/m/Y H:i:s') . "\n" .
-                    "📜 Mã giao dịch: {$transaction->id}";
+                "👤 Thành viên: {$member->telegram_id}\n" .
+                "📦 Gói Vip: {$vipcard->amount_usd} USD\n" .
+                "💰 Số tiền: {$transaction->amount} USD\n" .
+                "🎁 Điểm thưởng: {$vipcard->ticket_count} 🎟️\n" .
+                "📜 Mô tả: {$vipcard->description} 🎟️\n" .
+                "🕒 Thời gian: " . now()->format('d/m/Y H:i:s') . "\n" .
+                "📜 Mã giao dịch: {$transaction->id}";
 
             // Sử dụng HTTP Client để gửi tin nhắn
             $response = Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [

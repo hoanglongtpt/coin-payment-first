@@ -14,6 +14,10 @@ class Transaction extends Model
         'package_id',
         'amount',
         'status',
+        'package_sku',
+        'tokens_first_time',
+        'sale',
+        'promotion',
     ];
 
 }

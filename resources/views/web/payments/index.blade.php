@@ -9,22 +9,28 @@
                 <div class="subtitle">Packages with the symbol are promotional packages for first top-up, only
                     applicable once per month</div>
             </div>
-            <div >
+            <div>
                 <span class="promo">Promotion +{{ $member->promotion ?? 0 }}🍀</span><br>
-                <span class="promo">Balance +{{ floor($member->account_balance ?? 0)  }} 🎟️</span>
+                <span class="promo">Balance +{{ floor($member->account_balance ?? 0) }} 🎟️</span>
             </div>
         </div>
 
-        <div class="paypal-btn"><img width="12" height="12" src="assets/images/icon_paypal.png" alt="icon_paypal">
+        <div class="paypal-btn"><img width="12" height="12" src="{{ asset('assets/images/icon_paypal.png') }}"
+                alt="icon_paypal">
             Paypal</div>
 
         <div class="grid">
-            @foreach($packages as $package)
-                <div class="card @if ($loop->last) full @endif" id="card-{{ $package->id }}">
-                    <div style="display:none;" class="package_id">{{ $package->id ?? null }}</div>
+            @foreach ($packages as $package)
+                <div class="card @if ($loop->last) full @endif" id="card-{{ $package['sku'] }}">
+                    <div style="display:none;" class="package_sku">{{ $package['sku'] ?? null }}</div>
+                    <div style="display:none;" class="promotion">{{ $package['promotion'] ?? null }}</div>
+                    <div style="display:none;" class="sale">{{ $package['sale'] ?? null }}</div>
+                    <div style="display:none;" class="price">{{ floor($package['price']) ?? null }}</div>
+                    <div style="display:none;" class="tokens_first_time">{{ $package['Tokens_first_time'] ?? null }}</div>
                     <div style="display:none;" class="member_id">{{ $member->id ?? null }}</div>
-                    <div class="amount">{{ floor($package->price) }} USD</div>
-                    <div class="reward">{{ $package->reward_points }} 🎟️ + <span class="bonus">{{ $package->bonus }}🍀</span></div>
+                    <div class="amount">{{ floor($package['price']) }} USD</div>
+                    <div class="reward">{{ $package['sale'] }} 🎟️ + <span
+                            class="bonus">{{ $package['promotion'] }}🍀</span></div>
                 </div>
             @endforeach
         </div>
@@ -38,37 +44,38 @@
     <!-- FULL UPDATED WHEEL SECTION WITH SVG + POPUP -->
     @include('web.includes.wheel_popup')
 
-    
+
 
     <!-- Confetti Video -->
-<video id="confetti-video" autoplay muted loop playsinline
-    style="display: none; position: fixed; top: 0; left: 0;
+    <video id="confetti-video" autoplay muted loop playsinline
+        style="display: none; position: fixed; top: 0; left: 0;
            width: 100vw; height: 100vh; object-fit: cover;
            z-index: 998; pointer-events: none;">
-    <source src="/assets/gif/Confetti.gif.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-</video>
+        <source src="/assets/gif/Confetti.gif.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
 
-<!-- Overlay (nếu cần chặn click) -->
-<div id="result-overlay"
-     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-            background:rgba(0,0,0,0); z-index: 999;"></div>
+    <!-- Overlay (nếu cần chặn click) -->
+    <div id="result-overlay"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(0,0,0,0); z-index: 999;">
+    </div>
 
-<!-- Modal -->
-<div id="result-popup"
-     style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+    <!-- Modal -->
+    <div id="result-popup"
+        style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
             background:#1e1e1e; padding:30px; border-radius:16px;
             text-align:center; z-index:1000; color:white; font-family:'Inter',sans-serif;">
-    <h3 style="margin-top:0">You received</h3>
-    <div id="reward-result" style="font-size:36px; margin:10px 0;">+50🍀</div>
-    <p>Bonus credits after payment.<br>The credits have been added to your account.</p>
-    <button onclick="closeResultPopup()"
-        style="margin-top:15px; padding:10px 20px;
+        <h3 style="margin-top:0">You received</h3>
+        <div id="reward-result" style="font-size:36px; margin:10px 0;">+50🍀</div>
+        <p>Bonus credits after payment.<br>The credits have been added to your account.</p>
+        <button onclick="closeResultPopup()"
+            style="margin-top:15px; padding:10px 20px;
                background:linear-gradient(to right,#f5c242,#e9a60c);
                color:#FFFFFF; border:none; border-radius:20px; font-weight:bold; cursor:pointer;">
-        Go to checkout page
-    </button>
-</div>
+            Go to checkout page
+        </button>
+    </div>
 
 
     <div id="vip-modal" style="display:none;">
@@ -83,7 +90,7 @@
                 will not be deleted when expired
             </div>
             <div class="vip-modal-list">
-                @foreach($vipCards as $card)
+                @foreach ($vipCards as $card)
                     <div class="vip-modal-item">
                         <div class="vip-modal-item-left">
                             <div style="display:none;" class="vip_card_id">{{ $card->id ?? null }}</div>
@@ -99,7 +106,8 @@
                     </div>
                 @endforeach
             </div>
-            <button onclick="location.reload();" class="vip-modal-btn"><span style="font-size:18px;">🎟️</span> Buy VIP</button>
+            <button onclick="location.reload();" class="vip-modal-btn"><span style="font-size:18px;">🎟️</span> Buy
+                VIP</button>
         </div>
     </div>
 
@@ -133,7 +141,7 @@
                     <div id="order-modal-total-today">$5.00</div>
                 </div>
             </div>
-            <button class="order-modal-btn" id="checkout-button" >Connect wallet</button>
+            <button class="order-modal-btn" id="checkout-button">Connect wallet</button>
             <div class="order-modal-note">
                 By confirming your subscription, you allow us to charge you for future payments in accordance with their
                 terms. You can always cancel your subscription.<br><br>
@@ -144,6 +152,24 @@
                     href="#">Contact</a>
             </div>
         </div>
+    </div>
+    <!-- Loading spinner -->
+    <div id="loading-spinner"
+        style="
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+        font-weight: bold;
+        color: gold;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 20px 30px;
+        border-radius: 10px;
+        font-size: 18px;
+    ">
+        Đang xử lý thanh toán...
     </div>
 @endsection
 
@@ -191,5 +217,3 @@
         document.body.style.overflow = "";
     }
 </script>
-
-

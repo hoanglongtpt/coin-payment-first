@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Telegram Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Đặt nền đen cho toàn bộ trang */
         body {
@@ -54,9 +55,11 @@
     </style>
 </head>
 <body>
+    @include('sweetalert::alert')
     <div class="card">
         <h1>Vui lòng đăng nhập vào bot Telegram để lấy link đăng nhập:</h1>
-        <p>Đăng nhập vào bot: <a href="https://t.me/coinpaymenttestbot" target="_blank">Coin Payment Bot</a></p>
+        <p>Đăng nhập vào bot video: <a href="https://t.me/videotest00_bot" target="_blank">Video bot</a></p>
+        <p>Đăng nhập vào bot photo: <a href="https://t.me/phototest00_bot" target="_blank">Photo bot</a></p>
     </div>
 </body>
 </html>

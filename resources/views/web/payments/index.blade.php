@@ -10,8 +10,8 @@
                     applicable once per month</div>
             </div>
             <div>
-                <span class="promo">Promotion +{{ $member->promotion ?? 0 }}🍀</span><br>
-                <span class="promo">Balance +{{ floor($member->account_balance ?? 0) }} 🎟️</span>
+                {{-- <span class="promo">Promotion +{{ $member->promotion ?? 0 }}🍀</span><br>
+                <span class="promo">Balance +{{ floor($member->account_balance ?? 0) }} 🎟️</span> --}}
             </div>
         </div>
 
@@ -129,10 +129,10 @@
                     </div>
                     <div id="order-modal-total">$5.00</div>
                 </div>
-                <div class="order-modal-row">
+                {{-- <div class="order-modal-row">
                     <div>Promotion</div>
                     <div>+{{ $member->promotion ?? 0 }}<span class="order-clover">🍀</span></div>
-                </div>
+                </div> --}}
                 <div class="order-modal-row">
                     <div>Subtotal</div>
                     <div id="order-modal-subtotal">$5.00</div>

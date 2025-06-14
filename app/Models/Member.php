@@ -16,4 +16,9 @@ class Member extends Model
         'wheel_status',
         'type_bot',
     ];
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }

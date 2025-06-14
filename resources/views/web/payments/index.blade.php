@@ -21,7 +21,8 @@
 
         <div class="grid">
             @foreach ($packages as $package)
-                <div class="card @if ($loop->last) full @endif" id="card-{{ $package['sku'] }}">
+                {{-- <div class="card @if ($loop->last) full @endif" id="card-{{ $package['sku'] }}"> --}}
+                <div class="card" id="card-{{ $package['sku'] }}">
                     <div style="display:none;" class="package_sku">{{ $package['sku'] ?? null }}</div>
                     <div style="display:none;" class="promotion">{{ $package['promotion'] ?? null }}</div>
                     <div style="display:none;" class="sale">{{ $package['sale'] ?? null }}</div>
@@ -29,7 +30,7 @@
                     <div style="display:none;" class="tokens_first_time">{{ $package['Tokens_first_time'] ?? null }}</div>
                     <div style="display:none;" class="member_id">{{ $member->id ?? null }}</div>
                     <div class="amount">{{ floor($package['price']) }} USD</div>
-                    <div class="reward">{{ $package['sale'] }} 🎟️ + <span
+                    <div class="reward">{{ $package['Tokens_first_time'] }} 🎟️ + <span
                             class="bonus">{{ $package['promotion'] }}🍀</span></div>
                 </div>
             @endforeach
@@ -51,7 +52,7 @@
         style="display: none; position: fixed; top: 0; left: 0;
            width: 100vw; height: 100vh; object-fit: cover;
            z-index: 998; pointer-events: none;">
-        <source src="/assets/gif/Confetti.gif.mp4" type="video/mp4">
+        <source src="{{asset('/assets/gif/animation_new.mp4')}}" type="video/mp4">
         Your browser does not support the video tag.
     </video>
 
@@ -92,15 +93,20 @@
                 @foreach ($vipCards as $card)
                     <div class="vip-modal-item">
                         <div class="vip-modal-item-left">
-                            <div style="display:none;" class="vip_card_id">{{ $card->id ?? null }}</div>
+                            <div style="display:none;" class="vip_card_id">{{$card['sku'] ?? null }}</div>
                             <div style="display:none;" class="member_id">{{ $member->id ?? null }}</div>
-                            <div class="vip-modal-item-amount">{{ floor($card->amount_usd) }} USD</div>
+                            <div style="display:none;" class="package_sku">{{ $card['sku'] ?? null }}</div>
+                            <div style="display:none;" class="promotion">{{ $card['promotion'] ?? null }}</div>
+                            <div style="display:none;" class="sale">{{ $card['sale'] ?? null }}</div>
+                            <div style="display:none;" class="price">{{ floor($card['price']) ?? null }}</div>
+                            <div style="display:none;" class="tokens_first_time">{{ $card['Tokens_first_time'] ?? null }}</div>
+                            <div class="vip-modal-item-amount">{{ floor($card['price'] ?? null) }} USD</div>
                             <div class="vip-modal-item-ticket">
-                                {{ $card->ticket_count }} <span class="vip-ticket-icon">🎟️</span>
+                                {{ $card['Tokens_first_time'] ?? null }} <span class="vip-ticket-icon">🎟️</span>
                             </div>
                         </div>
                         <div class="vip-modal-item-right">
-                            {{ $card->description }}
+                            Daily for {{ $card['Tokens_first_time'] ?? null}} Days {{ $card['days'] ?? null}}
                         </div>
                     </div>
                 @endforeach
@@ -140,7 +146,8 @@
                     <div id="order-modal-total-today">$5.00</div>
                 </div>
             </div>
-            <button class="order-modal-btn" id="checkout-button">Connect wallet</button>
+            {{-- <button class="order-modal-btn" id="checkout-button">Connect wallet</button> --}}
+            <button class="order-modal-btn" id="checkout-button"><img src="{{ asset('assets/images/Paypal_btn.png') }}" width="70" height="20" alt="pp_btn"></button>
             <div class="order-modal-note">
                 By confirming your subscription, you allow us to charge you for future payments in accordance with their
                 terms. You can always cancel your subscription.<br><br>
@@ -168,7 +175,7 @@
         border-radius: 10px;
         font-size: 18px;
     ">
-        Đang xử lý thanh toán...
+        Processing payment...
     </div>
 @endsection
 

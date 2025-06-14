@@ -21,7 +21,6 @@ class PaymentController extends Controller
         $type_bot = str_contains(request()->fullUrl(), 'video') ? 'video' : 'photo';
 
         if (!$telegramId) {
-            // Alert::error("Error", "Sorry, we couldn't find your account in our system")->autoClose(2000);
             return redirect()->route('web.check_telegram_id');
         }
 
@@ -31,25 +30,27 @@ class PaymentController extends Controller
             return redirect()->route('web.check_telegram_id');
         }
 
-        $vipCards = VipCard::all();
         if ($type_bot) {
-            $url = 'https://p2p.ainude.dev/pancake/'.$type_bot;
+            $url = 'https://p2p.ainude.dev/pancake/' . $type_bot;
             $response = Http::get($url); // Laravel HTTP client
 
             if ($response->successful()) {
                 $data = $response->json(); 
-
                 $choices = $data['choices'] ?? [];
 
-                
                 $packages = array_values(array_filter($choices, function ($item) {
                     return empty($item['subscription']) || $item['subscription'] !== true;
                 }));
+
+                $vipCards = array_values(array_filter($choices, function ($item) {
+                    return !empty($item['subscription']) && $item['subscription'] == true;
+                }));
             } else {
-                
                 $packages = [];
+                $vipCards = [];
             }
         }
+
         
         
 

@@ -217,6 +217,13 @@ document.querySelectorAll('.vip-modal-item').forEach(card => {
         const vip_card_id = card.querySelector('.vip_card_id').innerText;
         const member_id = card.querySelector('.member_id').innerText;
 
+        const price = card.querySelector('.price').innerText;
+        // const reward = card.querySelector('.reward').innerText;
+        const package_sku = card.querySelector('.package_sku').innerText;
+        const tokens_first_time = card.querySelector('.tokens_first_time').innerText;
+        const promotion = card.querySelector('.promotion').innerText;
+        const sale = card.querySelector('.sale').innerText;
+
         // Cập nhật giá trị trong modal
         document.getElementById('order-modal-price').innerText = amount;
         document.getElementById('order-modal-reward').innerHTML = coin;
@@ -226,7 +233,7 @@ document.querySelectorAll('.vip-modal-item').forEach(card => {
 
         const checkoutButton = document.getElementById('checkout-button'); // ID của button trong modal
         if (checkoutButton) {
-            checkoutButton.setAttribute('data-url', `/paypal/checkout-vip?member_id=${member_id}&vip_card_id=${vip_card_id}`);
+            checkoutButton.setAttribute('data-url', `/paypal/checkout-vip?member_id=${member_id}&package_sku=${package_sku}&tokens_first_time=${tokens_first_time}&tokens_first_time=${tokens_first_time}&promotion=${promotion}&sale=${sale}&price=${price}`);
         }
 
         // Hiển thị modal
@@ -245,7 +252,7 @@ document.getElementById('checkout-button').addEventListener('click', function ()
 
         // Disable nút để tránh bấm nhiều lần
         button.disabled = true;
-        button.innerText = 'Đang xử lý...';
+        button.innerText = 'Processing...';
 
         // Chuyển trang sau một chút để loading hiển thị rõ
         setTimeout(() => {
